@@ -18,9 +18,4 @@ CREATE TABLE IF NOT EXISTS citi.bike (
     gender SMALLINT
 );
 
---"tripduration","starttime","stoptime","start station id","start station name","start station latitude",
---306,"2019-03-01 06:47:08.2110","2019-03-01 06:52:14.7150",3183,"Exchange Place",40.7162469,
---"start station longitude","end station id","end station name","end station latitude","end station longitude",
---74.0334588,3267,"Morris Canal",40.7124188237569,-74.03852552175522,
---"bikeid","usertype","birth year","gender"
---26272,"Subscriber",1989,1
+-- CREATE INDEX idx_citi_bike_bike_id ON citi.bike(bike_id);

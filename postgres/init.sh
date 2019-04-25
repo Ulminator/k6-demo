@@ -1,19 +1,17 @@
 #!/bin/bash
 
+# $id can be empty if no container exists, true if container is running or, false if container is stopped
 id=$(docker inspect -f {{.State.Running}} pg)
 
-# $id can be empty if no container exists, true if container is running or, false if container is stopped
-echo $id
-
-if [[ ! -z $id && $id == true ]]; then
-  echo "Postgres is running, stopping and deleting it now"
-  docker kill pg
-  docker rm pg
-fi
-
-if [[ ! -z $id && $id == false ]]; then
-  echo "Postgres container is inactive, deleting it now"
-  docker rm pg
+if [[ ! -z $id ]]; then
+  if [[ $id == true ]]; then
+    echo "Postgres is running, stopping and deleting it now"
+    docker kill pg
+    docker rm pg
+  else
+    echo "Postgres container is inactive, deleting it now"
+    docker rm pg
+  fi
 fi
 
 docker run -t -p 5432:5432 --name pg -d postgres:9.6

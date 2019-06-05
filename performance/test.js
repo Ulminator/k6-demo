@@ -1,19 +1,24 @@
 import http from 'k6/http';
-// import { Counter, Rate } from "k6/metrics";
+import { Rate } from 'k6/metrics';
 import { check } from 'k6';
-import data from "./data.js/index.js"
+import data from "./data.js"
 
 const baseUrl = 'http://127.0.0.1:8080/api';
-// k6 run --out influxdb=http://localhost:8086/k6 -e POOL=true /test.js
+
+export let errorRate = new Rate("errors");
 
 export let options = {
   // vus: 1,
-  // duration: '3m',
+  // duration: '10s',
+  // rps: 100,
   stages: [
-    { duration: "1m", target: 10 }, //ramp up to 10 in 3min
+    { duration: "1m", target: 10 },
     { duration: "4m", target: 10 },
     { duration: "1m", target: 0 },
-  ]
+  ],
+  thresholds: {
+    errors: ['rate<0.01'],
+  },
 };
 
 export function setup() {
@@ -24,5 +29,7 @@ export function setup() {
 export default function(bikeIds) {
   const bikeId = bikeIds[Math.floor(Math.random() * bikeIds.length)];
   const res = http.get(baseUrl + `/bike/${bikeId}/trips?pool=${__ENV.POOL}`);
-  check(res, { 'status is 200': (r) => r.status === 201 });
+  check(res, {
+    'status is 200': (r) => r.status === 200
+  }) || errorRate.add(1);
 };
